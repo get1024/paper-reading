@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="RyanJoy 的论文阅读索引，收录中英对照批注与论证分析。">
+  <title>Paper Reading</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --background: #f8fafc;
+      --surface: rgb(255 255 255 / 72%);
+      --text: #0f172a;
+      --muted: #475569;
+      --border: rgb(15 23 42 / 15%);
+      --accent: #1d4ed8;
+      --shadow: 0 12px 36px rgb(15 23 42 / 8%);
+      --blue-glow: rgb(59 130 246 / 20%);
+      --violet-glow: rgb(168 85 247 / 17%);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #0b1020;
+        --surface: rgb(255 255 255 / 8%);
+        --text: #f1f5f9;
+        --muted: #b6c3d7;
+        --border: rgb(255 255 255 / 17%);
+        --accent: #93c5fd;
+        --shadow: 0 14px 40px rgb(0 0 0 / 27%);
+        --blue-glow: rgb(59 130 246 / 25%);
+        --violet-glow: rgb(168 85 247 / 20%);
+      }
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(900px 540px at 14% 0%, var(--blue-glow), transparent 68%),
+        radial-gradient(880px 500px at 92% 5%, var(--violet-glow), transparent 68%),
+        var(--background);
+      font: 1rem/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    a { color: var(--accent); }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+    .container {
+      width: min(100% - 40px, 1040px);
+      margin-inline: auto;
+      padding-block: clamp(36px, 7vw, 76px) 44px;
+    }
+
+    header, .card-footer, footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .byline {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.25rem, 6vw, 3.65rem);
+      line-height: 1.08;
+      letter-spacing: -.055em;
+    }
+
+    .subtitle { margin: 12px 0 0; color: var(--muted); }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .control {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .control svg { flex: none; }
+    .control:focus-within { border-color: var(--accent); }
+
+    input, select {
+      min-width: 0;
+      min-height: 44px;
+      color: var(--text);
+      background: transparent;
+      border: 0;
+      font: inherit;
+    }
+
+    input { width: 100%; }
+    input::placeholder { color: var(--muted); }
+    .sort-label, .results { font-size: .85rem; }
+    .results { margin: 14px 0; color: var(--muted); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      color: var(--text);
+      text-decoration: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      transition: transform 160ms ease, border-color 160ms ease;
+    }
+
+    .card:hover { transform: translateY(-3px); border-color: var(--accent); }
+    .card:hover .open { text-decoration: underline; }
+
+    .cover {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 2 / 1;
+      padding: 14px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cover img { width: 100%; height: 100%; object-fit: contain; min-height: 0; }
+
+    .card-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 1.16rem;
+      line-height: 1.4;
+      letter-spacing: -.018em;
+    }
+
+    .card p { margin: 0; color: var(--muted); font-size: .9rem; }
+
+    .card-footer {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: .82rem;
+    }
+
+    .tag { color: var(--muted); }
+    .open { color: var(--accent); font-weight: 600; }
+    .empty {
+      margin: 0;
+      padding: 32px 16px;
+      text-align: center;
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+    }
+
+    footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 640px) {
+      .container { width: calc(100% - 32px); }
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 380px) {
+      .toolbar { grid-template-columns: 1fr; }
+      select { flex: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <header>
+      <div>
+        <p class="byline">RyanJoy</p>
+        <h1 lang="en">Paper Reading</h1>
+        <p class="subtitle">已读论文的中英对照批注与论证分析。</p>
+      </div>
+    </header>
+
+    <div class="toolbar" id="toolbar" hidden>
+      <label class="control">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="2"/>
+          <path d="m16 16 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span class="sr-only">搜索论文</span>
+        <input id="search" type="search" placeholder="搜索论文标题或关键词" autocomplete="off">
+      </label>
+      <label class="control">
+        <span class="sort-label">标题</span>
+        <select id="sort" aria-label="按论文标题排序">
+          <option value="asc">A–Z</option>
+          <option value="desc">Z–A</option>
+        </select>
+      </label>
+    </div>
+
+    <p id="results" class="results" role="status"></p>
+
+    <ul class="grid" id="papers" aria-label="论文列表">
+      <li>
+        <a class="card" href="./Vision-OPD.html">
+          <div class="cover">
+            <img src="./assets/vision-opd.png" width="1228" height="488" alt="">
+          </div>
+          <div class="card-body">
+            <h2 lang="en">Vision-OPD: Learning to See Fine Details for Multimodal LLMs via On-Policy Self-Distillation</h2>
+            <p>让多模态模型从局部裁剪中学习，在看整张图时也能识别细节。</p>
+            <div class="card-footer">
+              <span class="tag">策略内自蒸馏</span>
+              <span class="open">阅读批注 <span aria-hidden="true">→</span></span>
+            </div>
+          </div>
+        </a>
+      </li>
+      <li>
+        <a class="card" href="./Zooming-without-Zooming.html">
+          <div class="cover">
+            <img src="./assets/zooming-without-zooming.png" width="1278" height="679" alt="">
+          </div>
+          <div class="card-body">
+            <h2 lang="en">Zooming without Zooming: Region-to-Image Distillation for Fine-Grained Multimodal Perception</h2>
+            <p>将局部放大图中的视觉知识蒸馏到整图输入，减少推理时的裁剪与重复编码。</p>
+            <div class="card-footer">
+              <span class="tag">区域到整图蒸馏</span>
+              <span class="open">阅读批注 <span aria-hidden="true">→</span></span>
+            </div>
+          </div>
+        </a>
+      </li>
+    </ul>
+
+    <p id="empty" class="empty" hidden>没有匹配的论文。试试更短的关键词。</p>
+
+    <footer>
+      <span>Paper Reading</span>
+      <a href="https://github.com/get1024/paper-reading">GitHub 仓库 <span aria-hidden="true">↗</span></a>
+    </footer>
+  </main>
+
+  <script>
+    const list = document.querySelector('#papers');
+    const search = document.querySelector('#search');
+    const sort = document.querySelector('#sort');
+    const results = document.querySelector('#results');
+    const empty = document.querySelector('#empty');
+    const compareTitles = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
+
+    function normalize(text) {
+      return text.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+    }
+
+    const papers = Array.from(list.children, (element) => ({
+      element,
+      title: element.querySelector('h2').textContent,
+      keywords: normalize(Array.from(
+        element.querySelectorAll('h2, p, .tag'), (field) => field.textContent
+      ).join(' ')),
+    }));
+
+    function filterPapers() {
+      const terms = normalize(search.value).split(' ').filter(Boolean);
+      let visible = 0;
+
+      for (const paper of papers) {
+        const matches = terms.every((term) => paper.keywords.includes(term));
+        paper.element.hidden = !matches;
+        if (matches) visible++;
+      }
+
+      results.textContent = terms.length
+        ? `找到 ${visible} 篇论文，共 ${papers.length} 篇`
+        : `共 ${papers.length} 篇论文`;
+      empty.hidden = visible > 0;
+    }
+
+    function sortPapers() {
+      const direction = sort.value === 'desc' ? -1 : 1;
+      papers.sort((a, b) => direction * compareTitles.compare(a.title, b.title));
+      list.append(...papers.map((paper) => paper.element));
+    }
+
+    search.addEventListener('input', filterPapers);
+    sort.addEventListener('change', sortPapers);
+    sortPapers();
+    filterPapers();
+    document.querySelector('#toolbar').hidden = false;
+  </script>
+</body>
+</html>
