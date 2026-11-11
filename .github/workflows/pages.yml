@@ -28,7 +28,9 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Generate paper index
-        run: python3 scripts/generate-index.py
+        run: |
+          python3 -m unittest discover -s scripts -p 'test_*.py'
+          python3 scripts/generate-index.py
 
       - name: Package original papers and generated index
         run: |

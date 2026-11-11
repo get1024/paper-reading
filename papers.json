@@ -1,10 +1,20 @@
 {
   "Vision-OPD.html": {
+    "short_title": "Vision-OPD",
     "description": "让多模态模型从局部裁剪中学习，在看整张图时也能识别细节。",
-    "tag": "策略内自蒸馏"
+    "tag": "策略内自蒸馏",
+    "topics": ["细粒度感知", "知识蒸馏"]
   },
   "Zooming-without-Zooming.html": {
+    "short_title": "Zooming without Zooming",
     "description": "将局部放大图中的视觉知识蒸馏到整图输入，减少推理时的裁剪与重复编码。",
-    "tag": "区域到整图蒸馏"
+    "tag": "区域到整图蒸馏",
+    "topics": ["细粒度感知", "知识蒸馏"]
+  },
+  "INSID3.html": {
+    "short_title": "INSID3",
+    "description": "用一个标注示例与 DINOv3 特征完成上下文分割，通过位置去偏与聚类建立跨图对应。",
+    "tag": "无需训练的上下文分割",
+    "topics": ["上下文分割", "无需训练"]
   }
 }

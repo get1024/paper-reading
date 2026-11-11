@@ -1,319 +1,1851 @@
 <!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="RyanJoy 的论文阅读索引，收录中英对照批注与论证分析。">
-  <title>Paper Reading</title>
-  <style>
-    :root {
-      color-scheme: light dark;
-      --background: #f8fafc;
-      --surface: rgb(255 255 255 / 72%);
-      --text: #0f172a;
-      --muted: #475569;
-      --border: rgb(15 23 42 / 15%);
-      --accent: #1d4ed8;
-      --shadow: 0 12px 36px rgb(15 23 42 / 8%);
-      --blue-glow: rgb(59 130 246 / 20%);
-      --violet-glow: rgb(168 85 247 / 17%);
-    }
-
-    @media (prefers-color-scheme: dark) {
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="RyanJoy 的论文阅读书架：中英对照批注、研究线索与阅读侧写。"
+    />
+    <title>Paper Reading · RyanJoy</title>
+    <link
+      rel="preload"
+      href="./assets/fonts/InterVariable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <!-- Charts adapted from Lieflat Charts: L4 Arc Matrix / F5 Tick Rows.
+       https://github.com/larashero3-dotcom/lieflat-charts
+       PolyForm Noncommercial 1.0.0: https://polyformproject.org/licenses/noncommercial/1.0.0/ -->
+    <style>
+      @font-face {
+        font-family: Inter;
+        src: url("./assets/fonts/InterVariable.woff2") format("woff2");
+        font-weight: 100 900;
+        font-display: swap;
+      }
       :root {
-        --background: #0b1020;
-        --surface: rgb(255 255 255 / 8%);
-        --text: #f1f5f9;
-        --muted: #b6c3d7;
-        --border: rgb(255 255 255 / 17%);
-        --accent: #93c5fd;
-        --shadow: 0 14px 40px rgb(0 0 0 / 27%);
-        --blue-glow: rgb(59 130 246 / 25%);
-        --violet-glow: rgb(168 85 247 / 20%);
+        color-scheme: light;
+        --paper: #f0efeb;
+        --ink: #1c1c1a;
+        --secondary: #4a4944;
+        --muted: #6a6963;
+        --quiet: #8f8e88;
+        --faint: #c6c5bf;
+        --line: #deddd6;
+        font-family:
+          Inter,
+          -apple-system,
+          BlinkMacSystemFont,
+          "PingFang SC",
+          "Microsoft YaHei",
+          sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+        font-synthesis: none;
       }
-    }
-
-    *, *::before, *::after { box-sizing: border-box; }
-    [hidden] { display: none !important; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      background:
-        radial-gradient(900px 540px at 14% 0%, var(--blue-glow), transparent 68%),
-        radial-gradient(880px 500px at 92% 5%, var(--violet-glow), transparent 68%),
-        var(--background);
-      font: 1rem/1.55 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
-
-    a { color: var(--accent); }
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-
-    .container {
-      width: min(100% - 40px, 1040px);
-      margin-inline: auto;
-      padding-block: clamp(36px, 7vw, 76px) 44px;
-    }
-
-    header, .card-footer, footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .byline {
-      margin: 0 0 8px;
-      color: var(--muted);
-      font-size: .8rem;
-      font-weight: 600;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(2.25rem, 6vw, 3.65rem);
-      line-height: 1.08;
-      letter-spacing: -.055em;
-    }
-
-    .subtitle { margin: 12px 0 0; color: var(--muted); }
-
-    .toolbar {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 12px;
-      margin-top: 32px;
-    }
-
-    .control {
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0 14px;
-      color: var(--muted);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-    }
-
-    .control svg { flex: none; }
-    .control:focus-within { border-color: var(--accent); }
-
-    input, select {
-      min-width: 0;
-      min-height: 44px;
-      color: var(--text);
-      background: transparent;
-      border: 0;
-      font: inherit;
-    }
-
-    input { width: 100%; }
-    input::placeholder { color: var(--muted); }
-    .sort-label, .results { font-size: .85rem; }
-    .results { margin: 14px 0; color: var(--muted); }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px;
-      padding: 0;
-      margin: 0;
-      list-style: none;
-    }
-
-    .card {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      overflow: hidden;
-      color: var(--text);
-      text-decoration: none;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      transition: transform 160ms ease, border-color 160ms ease;
-    }
-
-    .card:hover { transform: translateY(-3px); border-color: var(--accent); }
-    .card:hover .open { text-decoration: underline; }
-
-    .cover {
-      display: block;
-      flex: none;
-      width: 100%;
-      height: auto;
-      aspect-ratio: 2 / 1;
-      object-fit: contain;
-      padding: 14px;
-      background: #fff;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .card-body {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      gap: 12px;
-      padding: 20px;
-    }
-
-    .card h2 {
-      margin: 0;
-      font-size: 1.16rem;
-      line-height: 1.4;
-      letter-spacing: -.018em;
-    }
-
-    .card p { margin: 0; color: var(--muted); font-size: .9rem; }
-
-    .card-footer {
-      margin-top: auto;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-      font-size: .82rem;
-    }
-
-    .tag { color: var(--muted); }
-    .open { color: var(--accent); font-weight: 600; }
-    .empty {
-      margin: 0;
-      padding: 32px 16px;
-      text-align: center;
-      color: var(--muted);
-      border: 1px dashed var(--border);
-      border-radius: 16px;
-    }
-
-    footer {
-      margin-top: 32px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: .82rem;
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      overflow: hidden;
-      clip-path: inset(50%);
-      white-space: nowrap;
-    }
-
-    @media (max-width: 640px) {
-      .container { width: calc(100% - 32px); }
-      .grid { grid-template-columns: 1fr; }
-    }
-
-    @media (max-width: 380px) {
-      .toolbar { grid-template-columns: 1fr; }
-      select { flex: 1; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .card { transition: none; }
-      .card:hover { transform: none; }
-    }
-  </style>
-</head>
-<body>
-  <main class="container">
-    <header>
-      <div>
-        <p class="byline">RyanJoy</p>
-        <h1 lang="en">Paper Reading</h1>
-        <p class="subtitle">已读论文的中英对照批注与论证分析。</p>
-      </div>
-    </header>
-
-    <div class="toolbar" id="toolbar" hidden>
-      <label class="control">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="2"/>
-          <path d="m16 16 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <span class="sr-only">搜索论文</span>
-        <input id="search" type="search" placeholder="搜索论文标题或关键词" autocomplete="off">
-      </label>
-      <label class="control">
-        <span class="sort-label">标题</span>
-        <select id="sort" aria-label="按论文标题排序">
-          <option value="asc">A–Z</option>
-          <option value="desc">Z–A</option>
-        </select>
-      </label>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 24px;
+      }
+      body {
+        margin: 0;
+        -webkit-font-smoothing: antialiased;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      a {
+        color: inherit;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 4px;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+        color: inherit;
+      }
+      button,
+      select,
+      summary {
+        cursor: pointer;
+      }
+      button {
+        background: none;
+      }
+      :focus-visible {
+        outline: 2px solid var(--ink);
+        outline-offset: 5px;
+      }
+      ::selection {
+        background: var(--ink);
+        color: var(--paper);
+      }
+      .container {
+        width: min(1184px, calc(100% - 80px));
+        margin-inline: auto;
+      }
+      .masthead {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        padding-block: 26px;
+        border-bottom: 1px solid var(--ink);
+      }
+      .brand {
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-decoration: none;
+      }
+      .brand svg {
+        width: 24px;
+        height: 24px;
+      }
+      .masthead nav {
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        font-size: 12px;
+      }
+      .masthead nav a {
+        white-space: nowrap;
+        text-decoration: none;
+        color: var(--muted);
+      }
+      .masthead nav a:hover {
+        color: var(--ink);
+      }
+      .hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 40px;
+        padding-block: 56px 40px;
+      }
+      .eyebrow {
+        font-size: 10px;
+        letter-spacing: 0.13em;
+        font-weight: 600;
+        color: var(--muted);
+        margin: 0 0 16px;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(44px, 6.1vw, 82px);
+        font-weight: 600;
+        line-height: 1.08;
+        letter-spacing: -0.065em;
+      }
+      .subtitle {
+        margin: 20px 0 0;
+        font-size: 16px;
+        color: var(--secondary);
+        letter-spacing: 0.02em;
+      }
+      .hero-note {
+        margin: 0 0 4px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.9;
+        text-align: right;
+        white-space: nowrap;
+      }
+      .hero-note span {
+        display: block;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+        border-block: 1px solid var(--line);
+        padding-block: 23px;
+        margin: 0;
+      }
+      .stat {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+      }
+      .stat dt {
+        color: var(--muted);
+        font-size: 12px;
+        order: 2;
+      }
+      .stat dd {
+        margin: 0;
+        font-size: 32px;
+        line-height: 1.1;
+        letter-spacing: -0.05em;
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+      }
+      section {
+        margin-top: 50px;
+      }
+      .section-heading {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 22px;
+      }
+      .section-title {
+        display: flex;
+        align-items: baseline;
+        gap: 13px;
+      }
+      .section-number {
+        font-size: 11px;
+        color: var(--quiet);
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+      }
+      h2 {
+        margin: 0;
+        font-size: 21px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+      }
+      .section-caption {
+        margin: 3px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .toolbar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .search-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid var(--faint);
+        width: 274px;
+      }
+      .search-control svg {
+        flex: none;
+      }
+      input {
+        min-width: 0;
+        width: 100%;
+        height: 39px;
+        background: none;
+        border: 0;
+        font-size: 12px;
+        outline: none;
+      }
+      .search-control:focus-within {
+        border-color: var(--ink);
+      }
+      input::placeholder {
+        color: var(--muted);
+      }
+      select {
+        max-width: 100%;
+        min-height: 39px;
+        background: var(--paper);
+        border: 0;
+        border-bottom: 1px solid var(--faint);
+        border-radius: 0;
+        font-size: 12px;
+        padding: 0 16px 0 0;
+      }
+      .filter-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 24px;
+      }
+      .filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+      }
+      .filter {
+        border: 1px solid var(--line);
+        border-radius: 99px;
+        padding: 6px 13px;
+        font-size: 11px;
+        min-height: 34px;
+      }
+      .filter:hover {
+        border-color: var(--quiet);
+      }
+      .filter[aria-pressed="true"] {
+        background: var(--ink);
+        color: var(--paper);
+        border-color: var(--ink);
+      }
+      .filter-count {
+        margin-left: 7px;
+        font-variant-numeric: tabular-nums;
+      }
+      .results {
+        color: var(--muted);
+        font-size: 11px;
+        white-space: nowrap;
+        margin: 0;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 28px;
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+      .grid > li {
+        min-width: 0;
+      }
+      .card {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        color: inherit;
+        text-decoration: none;
+      }
+      .cover,
+      .cover-fallback {
+        width: 100%;
+        aspect-ratio: 1.8;
+        object-fit: contain;
+        padding: 16px;
+        background: var(--line);
+        border-radius: 16px;
+        transition: background 200ms;
+      }
+      .cover-fallback {
+        display: grid;
+        place-items: center;
+        font-size: 24px;
+        font-weight: 600;
+      }
+      .card:hover .cover {
+        background: var(--faint);
+      }
+      .card-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 18px 0 0;
+        gap: 10px;
+      }
+      .paper-meta {
+        color: var(--muted);
+        font-size: 10px;
+        letter-spacing: 0.025em;
+      }
+      .paper-title {
+        font-size: 20px;
+        line-height: 1.25;
+        font-weight: 600;
+        letter-spacing: -0.04em;
+        margin: 0;
+      }
+      .card:hover .paper-title {
+        text-decoration: underline;
+        text-underline-offset: 4px;
+      }
+      .paper-subtitle {
+        font-size: 11px;
+        line-height: 1.6;
+        color: var(--muted);
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .paper-summary {
+        font-size: 13px;
+        line-height: 1.85;
+        color: var(--secondary);
+        margin: 1px 0 8px;
+      }
+      .paper-stats {
+        color: var(--muted);
+        font-size: 10px;
+        margin: auto 0 0;
+        padding-top: 5px;
+      }
+      .card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        border-top: 1px solid var(--line);
+        padding-top: 13px;
+        font-size: 10px;
+      }
+      .tag {
+        color: var(--muted);
+      }
+      .open {
+        font-weight: 600;
+      }
+      .open span {
+        display: inline-block;
+        margin-left: 4px;
+        transition: transform 200ms;
+      }
+      .card:hover .open span {
+        transform: translateX(3px);
+      }
+      .empty {
+        text-align: center;
+        padding: 40px 20px;
+        border: 1px dashed var(--faint);
+        border-radius: 16px;
+        color: var(--muted);
+      }
+      .text-button {
+        border: 0;
+        padding: 4px 0;
+        text-decoration: underline;
+        text-underline-offset: 4px;
+        font-size: 12px;
+      }
+      .authors {
+        margin-top: 26px;
+        padding-block: 14px;
+        border-block: 1px solid var(--line);
+        font-size: 11px;
+      }
+      .authors summary {
+        color: var(--secondary);
+        width: fit-content;
+      }
+      .authors summary span {
+        color: var(--muted);
+        margin-left: 8px;
+      }
+      .author-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 20px;
+        padding-top: 16px;
+      }
+      .author-list button {
+        border: 0;
+        padding: 3px 0;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .author-list button:hover {
+        color: var(--ink);
+        text-decoration: underline;
+      }
+      .connections {
+        margin-top: 38px;
+      }
+      .connection-intro {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .connection-intro h2 {
+        font-size: 13px;
+        letter-spacing: 0;
+      }
+      .connection-intro p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .citation-route {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        border-block: 1px solid var(--line);
+        padding-block: 18px;
+      }
+      .citation-paper {
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+      .citation-paper:hover {
+        text-decoration: underline;
+      }
+      .citation-arrow {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 10px;
+      }
+      .citation-arrow::after {
+        content: "⟶";
+        font-size: 28px;
+        line-height: 1;
+      }
+      .citation-evidence {
+        margin-left: auto;
+        font-size: 10px;
+        color: var(--muted);
+      }
+      .insights {
+        margin-top: 52px;
+        padding-top: 32px;
+        border-top: 1px solid var(--ink);
+      }
+      .insight-actions {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+      }
+      .replay {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 0;
+        padding: 6px 0;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .charts {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 24px;
+      }
+      .chart-card {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        border-radius: 24px;
+        padding: 28px 28px 20px;
+        background: var(--paper);
+      }
+      .chart-card h3 {
+        font-size: 16.5px;
+        letter-spacing: -0.02em;
+        line-height: 1.5;
+        font-weight: 700;
+        margin: 0 0 6px;
+      }
+      .chart-card .sub {
+        color: var(--muted);
+        font-size: 11.5px;
+        margin: 0 0 14px;
+        line-height: 1.8;
+      }
+      .chart-card svg {
+        width: 100%;
+        display: block;
+        overflow: visible;
+      }
+      .chart-card svg text {
+        font-family: Inter, "PingFang SC", sans-serif;
+      }
+      .src {
+        border-top: 1px solid var(--line);
+        padding-top: 12px;
+        margin-top: auto;
+        font-size: 9.5px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+      .chart-note {
+        margin: 12px 0 14px;
+        font-size: 11px;
+        color: var(--secondary);
+        line-height: 1.8;
+      }
+      .chart-legend {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        font-size: 9px;
+        color: var(--muted);
+        margin-top: 12px;
+      }
+      .legend-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--ink);
+        display: inline-block;
+        margin-right: 3px;
+      }
+      .legend-dot.mid {
+        background: var(--muted);
+      }
+      .legend-dot.low {
+        background: #b0afa9;
+      }
+      .data-details {
+        border-top: 1px solid var(--line);
+        padding-block: 16px;
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .data-details summary {
+        width: fit-content;
+      }
+      .data-details p {
+        max-width: 820px;
+        line-height: 1.9;
+      }
+      .table-wrap {
+        overflow-x: auto;
+        margin-block: 16px;
+      }
+      table {
+        border-collapse: collapse;
+        min-width: 560px;
+        width: 100%;
+        font-size: 11px;
+        font-variant-numeric: tabular-nums;
+      }
+      th,
+      td {
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: right;
+      }
+      th:first-child,
+      td:first-child {
+        text-align: left;
+        padding-left: 0;
+      }
+      th {
+        color: var(--secondary);
+        font-weight: 600;
+      }
+      footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: center;
+        margin-top: 46px;
+        border-top: 1px solid var(--ink);
+        padding-block: 22px 32px;
+        color: var(--muted);
+        font-size: 10px;
+      }
+      footer p {
+        margin: 0;
+      }
+      footer a {
+        text-decoration: none;
+      }
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      .skip-link {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        transform: translateY(-200%);
+        padding: 8px 16px;
+        background: var(--ink);
+        color: var(--paper);
+        z-index: 2;
+      }
+      .skip-link:focus {
+        transform: none;
+      }
+      .pop {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pop 0.5s cubic-bezier(0.2, 0.7, 0.3, 1.3) both;
+      }
+      @keyframes pop {
+        from {
+          transform: scale(0);
+        }
+        to {
+          transform: none;
+        }
+      }
+      .fade {
+        animation: fade 0.9s ease both;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+        }
+      }
+      .draw {
+        stroke-dasharray: 1;
+        stroke-dashoffset: 1;
+        animation: draw 1s cubic-bezier(0.4, 0, 0.2, 1) both;
+      }
+      @keyframes draw {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      @media (min-width: 1440px) {
+        .hero {
+          padding-top: 64px;
+        }
+      }
+      @media (max-width: 960px) {
+        .container {
+          width: calc(100% - 48px);
+        }
+        .grid {
+          gap: 20px;
+        }
+        .hero-note {
+          display: none;
+        }
+        .toolbar {
+          gap: 10px;
+        }
+        .search-control {
+          width: 210px;
+        }
+        .charts {
+          gap: 8px;
+        }
+        .chart-card {
+          padding: 20px 12px;
+        }
+      }
+      @media (max-width: 720px) {
+        .container {
+          width: calc(100% - 36px);
+        }
+        .masthead {
+          padding-block: 20px;
+        }
+        .masthead nav {
+          gap: 18px;
+        }
+        .hero {
+          padding-block: 38px 30px;
+        }
+        .subtitle {
+          font-size: 14px;
+          margin-top: 16px;
+        }
+        .stats {
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+        }
+        .stat dd {
+          font-size: 28px;
+        }
+        section {
+          margin-top: 36px;
+        }
+        .section-heading {
+          flex-wrap: wrap;
+          gap: 14px;
+        }
+        .toolbar {
+          width: 100%;
+        }
+        .search-control {
+          flex: 1;
+          width: auto;
+        }
+        .filter-row {
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+        .filters {
+          gap: 6px;
+        }
+        .grid {
+          grid-template-columns: 1fr;
+          gap: 32px;
+        }
+        .cover,
+        .cover-fallback {
+          aspect-ratio: 1.95;
+        }
+        .paper-title {
+          font-size: 22px;
+        }
+        .paper-summary {
+          margin-bottom: 0;
+        }
+        .paper-stats {
+          margin-top: 2px;
+        }
+        .paper-subtitle {
+          -webkit-line-clamp: 3;
+        }
+        .card-body {
+          gap: 9px;
+        }
+        .citation-route {
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+        .citation-evidence {
+          margin-left: 0;
+          width: 100%;
+        }
+        .citation-paper {
+          font-size: 12px;
+        }
+        .citation-arrow {
+          gap: 4px;
+        }
+        .citation-arrow::after {
+          font-size: 20px;
+        }
+        .connection-intro {
+          flex-wrap: wrap;
+          gap: 4px 12px;
+        }
+        .insights {
+          padding-top: 24px;
+        }
+        .charts {
+          grid-template-columns: 1fr;
+          gap: 12px;
+        }
+        .chart-card {
+          padding: 20px 0;
+        }
+        .insight-actions {
+          width: 100%;
+          justify-content: space-between;
+        }
+        footer {
+          flex-wrap: wrap;
+          margin-top: 28px;
+        }
+      }
+      @media (max-width: 380px) {
+        .masthead { flex-wrap: wrap; gap: 14px; }
+        .masthead nav { width: 100%; justify-content: space-between; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          transition: none !important;
+        }
+        .pop,
+        .fade {
+          animation: none;
+        }
+        .draw {
+          animation: none;
+          stroke-dasharray: none;
+          stroke-dashoffset: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <a class="skip-link" href="#library">跳转到论文列表</a>
+    <div class="container">
+      <header class="masthead">
+        <a class="brand" href="./" aria-label="RyanJoy 论文阅读首页"
+          ><svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M3 4.5h7l2 2 2-2h7v15h-7l-2 2-2-2H3zM12 6.5v15"
+              stroke="currentColor"
+              stroke-width="1.4"
+            />
+            <path
+              d="M6 8h3M6 11h3M15 8h3M15 11h3"
+              stroke="currentColor"
+              stroke-width="1.1"
+            /></svg
+          >RYANJOY <span aria-hidden="true">/</span> 阅读手记</a
+        >
+        <nav aria-label="主导航">
+          <a href="#library">书架</a><a href="#insights">阅读侧写</a
+          ><a
+            href="https://github.com/get1024/paper-reading"
+            aria-label="GitHub 仓库"
+            >GitHub ↗</a
+          >
+        </nav>
+      </header>
+      <main>
+        <div class="hero">
+          <div>
+            <p class="eyebrow">A PERSONAL RESEARCH LIBRARY</p>
+            <h1 lang="en">Paper Reading<span aria-hidden="true">.</span></h1>
+            <p class="subtitle">读过的论文，值得再读的线索。</p>
+          </div>
+          <p class="hero-note">
+            <span>中英对照 · 五色批注</span
+            ><span>从方法细节，到论证脉络。</span>
+          </p>
+        </div>
+        <dl class="stats" aria-label="全库阅读笔记统计">
+          <div class="stat">
+            <dt>篇论文</dt>
+            <dd>{{paper_count}}</dd>
+          </div>
+          <div class="stat">
+            <dt>位作者</dt>
+            <dd>{{author_count}}</dd>
+          </div>
+          <div class="stat">
+            <dt>段双语正文</dt>
+            <dd>{{paragraph_count}}</dd>
+          </div>
+          <div class="stat">
+            <dt>处重点标注</dt>
+            <dd>{{highlight_count}}</dd>
+          </div>
+        </dl>
+        <section id="library" aria-labelledby="library-title">
+          <div class="section-heading">
+            <div class="section-title">
+              <span class="section-number">01</span>
+              <h2 id="library-title">阅读书架</h2>
+            </div>
+            <div class="toolbar" id="toolbar" hidden>
+              <label class="search-control"
+                ><svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    cx="10.5"
+                    cy="10.5"
+                    r="6.5"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                  />
+                  <path
+                    d="m16 16 4 4"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                  /></svg
+                ><span class="sr-only">搜索论文、作者或关键词</span
+                ><input
+                  id="search"
+                  type="search"
+                  placeholder="搜索论文、作者或关键词"
+                  autocomplete="off" /></label
+              ><label
+                ><span class="sr-only">论文排序</span
+                ><select id="sort" aria-label="论文排序">
+                  <option value="asc">标题 A–Z</option>
+                  <option value="desc">标题 Z–A</option>
+                  <option value="paragraphs">正文段落最多</option>
+                </select></label
+              >
+            </div>
+          </div>
+          <div class="filter-row">
+            <div
+              id="filters"
+              class="filters"
+              role="group"
+              aria-label="按研究主题筛选"
+              hidden
+            ></div>
+            <p id="results" class="results" role="status">
+              共 {{paper_count}} 篇论文
+            </p>
+          </div>
+          <ul class="grid" id="papers" aria-label="论文列表">
+            {{paper_cards}}
+          </ul>
+          <div id="empty" class="empty" hidden>
+            <p>没有匹配的论文，试试其他作者或关键词。</p>
+            <button class="text-button" id="clear-filters" type="button">
+              清除全部筛选
+            </button>
+          </div>
+          <details class="authors" id="authors" hidden>
+            <summary>
+              按作者找论文 <span>{{author_count}} 位 · 点击姓名筛选</span>
+            </summary>
+            <div id="author-list" class="author-list"></div>
+          </details>
+          <noscript
+            ><p class="section-caption">
+              所有论文均可直接打开。启用 JavaScript
+              可使用搜索、作者索引与统计图表。
+            </p></noscript
+          >
+        </section>
+        <section
+          class="connections"
+          id="connections"
+          aria-labelledby="connections-title"
+          hidden
+        >
+          <div class="connection-intro">
+            <h2 id="connections-title">论文之间的线索</h2>
+            <p>沿着库内引用，回看方法的来处。</p>
+          </div>
+          <div id="citation-routes"></div>
+        </section>
+        <section
+          id="insights"
+          class="insights"
+          aria-labelledby="insights-title"
+          hidden
+        >
+          <div class="section-heading">
+            <div>
+              <div class="section-title">
+                <span class="section-number">02</span>
+                <h2 id="insights-title">阅读侧写</h2>
+              </div>
+              <p class="section-caption">全库笔记统计 · 不随书架筛选变化</p>
+            </div>
+            <div class="insight-actions">
+              <label id="chart-page-control" hidden
+                ><span class="sr-only">选择图表对比范围</span
+                ><select
+                  id="chart-page"
+                  aria-label="选择图表对比范围"
+                ></select></label
+              ><button
+                type="button"
+                class="replay"
+                id="replay"
+                aria-label="重播统计图表"
+              >
+                <span aria-hidden="true">↻</span> 重播图表
+              </button>
+            </div>
+          </div>
+          <div class="charts">
+            <article class="chart-card">
+              <h3>每篇笔记，留下不同的关注点</h3>
+              <p class="sub">圆的面积 = 高亮片段数 · 每行一篇论文</p>
+              <svg
+                id="highlight-matrix"
+                viewBox="0 0 500 291"
+                role="img"
+                aria-label="每篇论文五类高亮片段数量，完整数值见统计明细"
+              ></svg>
+              <div class="chart-legend">
+                <span><i class="legend-dot low"></i>1–29</span
+                ><span><i class="legend-dot mid"></i>30–59</span
+                ><span><i class="legend-dot"></i>60 及以上</span
+                ><span>个片段</span>
+              </div>
+              <p id="highlight-insight" class="chart-note"></p>
+              <div class="src">ARC MATRIX · 数据来自各篇笔记的五色高亮</div>
+            </article>
+            <article class="chart-card">
+              <h3>从参考文献，延伸下一条阅读线索</h3>
+              <p class="sub">一根刻线 = 一条参考文献 · 每五条一个点标</p>
+              <svg
+                id="reference-ticks"
+                viewBox="0 0 500 291"
+                role="img"
+                aria-label="每篇论文参考文献条目数，完整数值见统计明细"
+              ></svg>
+              <p id="reference-insight" class="chart-note"></p>
+              <div class="src">TICK ROWS · 数据来自各篇笔记的参考文献列表</div>
+            </article>
+          </div>
+          <details class="data-details">
+            <summary>查看统计明细与口径</summary>
+            <p>
+              高亮按整篇笔记中的标注片段计数（含图表、脚注等），同一段可包含多个片段；回应与让步合并为「讨论」。参考文献按各篇列表条目计数，未跨篇去重。正文不含图表、公式及参考文献。合计仅包含已识别的字段，无法识别的项目显示「—」。数量描述笔记的组织方式，不用于评价论文质量。
+            </p>
+            <div class="table-wrap" id="data-table"></div>
+            <p>
+              图表结构基于
+              <a href="https://github.com/larashero3-dotcom/lieflat-charts"
+                >Lieflat Charts</a
+              >
+              的 Arc Matrix 与 Tick Rows；采用统一灰阶，深浅与面积保留数量含义。
+            </p>
+          </details>
+        </section>
+      </main>
+      <footer>
+        <p>RyanJoy · 读、理解、再连接。</p>
+        <a href="https://github.com/get1024/paper-reading"
+          >查看阅读仓库 <span aria-hidden="true">↗</span></a
+        >
+      </footer>
     </div>
+    <script type="application/json" id="paper-data">
+      {{paper_data}}
+    </script>
+    <script>
+      /* ═══════════════════════════════════════════════════════════════
+   MONO TOKENS — 风格的唯一正本
+   所有 mono 图表（Chart.js / ECharts / 手写 SVG）共享这一份。
+   任何文件里出现与本文件冲突的颜色、字体、动画参数，以本文件为准。
+   用法：<script src="mono-tokens.js"><\/script>，全部挂在 window.MONO 上；
+   也可以直接把本文件内容内联进单文件 HTML（开源分发时推荐内联）。
+   ═══════════════════════════════════════════════════════════════ */
+      (function (global) {
+        "use strict";
 
-    <p id="results" class="results" role="status">共 {{paper_count}} 篇论文</p>
+        /* ── 1 · 色板 ──────────────────────────────────────────────
+     纸灰底 + 炭黑墨。没有彩色。明度即数据：最重要 = 最黑。   */
+        const INK = "#1C1C1A"; // 墨：主数据、标题、强调
+        const PAPER = "#F0EFEB"; // 纸：页面底色 = 浅卡底色（卡片无边框，靠留白分卡）
+        const MUTED = "#8F8E88"; // 次级文字、副标题
+        const FAINT = "#C6C5BF"; // 来源行、辅助刻度
+        const GRID = "#DEDDD6"; // 网格线、发丝线
 
-    <ul class="grid" id="papers" aria-label="论文列表">
-{{paper_cards}}
-    </ul>
+        // 7 级灰阶 ladder：多系列时按重要性从黑到浅分配
+        const L = [
+          "#1C1C1A",
+          "#4A4944",
+          "#6A6963",
+          "#8F8E88",
+          "#B0AFA9",
+          "#C6C5BF",
+          "#D8D7D1",
+        ];
+        // 5 级简版（waffle 等少系列场景）
+        const LAD = ["#1C1C1A", "#4A4944", "#8F8E88", "#B0AFA9", "#D8D7D1"];
 
-    <p id="empty" class="empty" hidden>没有匹配的论文。试试更短的关键词。</p>
+        // 暗卡（dark card）专用：底 #1C1C1A，其上的"墨"反转为纸色
+        const DARK = {
+          bg: "#1C1C1A",
+          ink: "#F0EFEB", // 暗卡上的主数据色
+          muted: "#8F8E88",
+          faint: "#55554F", // 暗卡来源行
+          grid: "#2E2D29", // 暗卡网格 / 发丝线
+          gridSoft: "#2A2925",
+          ladder: [
+            "#F0EFEB",
+            "#DCDAD2",
+            "#C9C7BD",
+            "#B3B0A4",
+            "#8F8E88",
+            "#6A6963",
+            "#4A4944",
+          ],
+        };
 
-    <footer>
-      <span>Paper Reading</span>
-      <a href="https://github.com/get1024/paper-reading">GitHub 仓库 <span aria-hidden="true">↗</span></a>
-    </footer>
-  </main>
+        /* ── 2 · 字体 ────────────────────────────────────────────── */
+        const FONT = {
+          family: "Inter",
+          // Google Fonts 引入行（放 <head>）：
+          link: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
+          title: { size: 16.5, weight: 700, spacing: "-.02em" }, // 卡内 h2
+          titleBig: { size: 19, weight: 700, spacing: "-.02em" }, // 独立大图 h2
+          sub: { size: 11.5, weight: 400 }, // 副标题（图例说明写在这里）
+          src: { size: 9.5, weight: 500, spacing: ".08em" }, // 来源行，全大写
+          value: { weight: 800 }, // 图内数值一律 800
+          axis: { size: 9.5, weight: 600 }, // 轴标签
+          // SVG 内最小字号下限：半宽卡 6.5px，通栏/大图 5.5px。低于下限改 hover 出。
+          minHalf: 6.5,
+          minWide: 5.5,
+        };
 
-  <script>
-    const list = document.querySelector('#papers');
-    const search = document.querySelector('#search');
-    const sort = document.querySelector('#sort');
-    const results = document.querySelector('#results');
-    const empty = document.querySelector('#empty');
-    const compareTitles = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
+        /* ── 3 · 形状 ────────────────────────────────────────────── */
+        const SHAPE = {
+          cardRadius: 24, // 卡片圆角
+          cardPad: "28px 28px 20px",
+          barRadius: 99, // 柱端胶囊圆角（竖柱只圆上端，横柱只圆外端）
+          tooltipRadius: 12,
+        };
 
-    function normalize(text) {
-      return text.normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
-    }
+        /* ── 4 · 动画性格 ────────────────────────────────────────
+     快进快停，quarticOut / cubicOut，不弹跳（elasticOut 只给波浪入场）。 */
+        const MOTION = {
+          enter: 900, // 常规入场 ms
+          enterSlow: 1200, // 大元素 / 关系图
+          easing: "quarticOut",
+          staggerDot: 12, // 点阵逐个延迟 ms（8–15 区间）
+          staggerBar: 100, // 条形逐根延迟 ms（80–130 区间）
+          // CSS 动画类（手写 SVG 用）：pop 缩放入场 / fade 淡入 / draw 描线
+          css: `
+  .pop{transform-box:fill-box;transform-origin:center;animation:pop .5s cubic-bezier(.2,.7,.3,1.3) both}
+  @keyframes pop{from{transform:scale(0)}to{transform:none}}
+  .fade{animation:fade .9s ease both}
+  @keyframes fade{from{opacity:0}}
+  .draw{stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1s cubic-bezier(.4,0,.2,1) both}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  @media (prefers-reduced-motion:reduce){
+    .pop,.fade{animation:none}
+    .draw{animation:none;stroke-dasharray:none;stroke-dashoffset:0}
+  }`,
+        };
 
-    const papers = Array.from(list.children, (element) => ({
-      element,
-      title: element.querySelector('h2').textContent,
-      keywords: normalize(Array.from(
-        element.querySelectorAll('h2, p, .tag'), (field) => field.textContent
-      ).join(' ') + ' ' + element.dataset.keywords),
-    }));
+        /* ── 5 · Tooltip ─────────────────────────────────────────
+     浅卡用黑底纸字，暗卡用纸底黑字。ECharts 直接展开这两个对象。 */
+        const tipLight = {
+          backgroundColor: INK,
+          borderWidth: 0,
+          padding: [10, 14],
+          textStyle: { color: PAPER, fontFamily: "Inter", fontSize: 12 },
+        };
+        const tipDark = {
+          backgroundColor: PAPER,
+          borderWidth: 0,
+          padding: [10, 14],
+          textStyle: { color: INK, fontFamily: "Inter", fontSize: 12 },
+        };
 
-    function filterPapers() {
-      const terms = normalize(search.value).split(' ').filter(Boolean);
-      let visible = 0;
+        /* ── 6 · 确定性伪随机 ────────────────────────────────────
+     演示数据一律用它，不用 Math.random()——刷新必须长一样，
+     否则截图 / 录屏 / 回归对比全部失效。                       */
+        const rnd = (i, k) =>
+          Math.abs(((i * 73856093) ^ (k * 19349663)) % 1000) / 1000;
 
-      for (const paper of papers) {
-        const matches = terms.every((term) => paper.keywords.includes(term));
-        paper.element.hidden = !matches;
-        if (matches) visible++;
+        /* ── 7 · 几何 ────────────────────────────────────────────── */
+        const D2R = Math.PI / 180;
+        const pol = (cx, cy, r, deg) => [
+          cx + r * Math.cos(deg * D2R),
+          cy + r * Math.sin(deg * D2R),
+        ];
+        // 环形扇区 path（cornerRadius 自己在调用处用 ECharts sector 或手动倒角）
+        const sect = (cx, cy, r0, r1, a0, a1) => {
+          const big = a1 - a0 > 180 ? 1 : 0;
+          const [xa, ya] = pol(cx, cy, r1, a0),
+            [xb, yb] = pol(cx, cy, r1, a1);
+          const [xc, yc] = pol(cx, cy, r0, a1),
+            [xd, yd] = pol(cx, cy, r0, a0);
+          return `M${xa} ${ya} A${r1} ${r1} 0 ${big} 1 ${xb} ${yb} L${xc} ${yc} A${r0} ${r0} 0 ${big} 0 ${xd} ${yd} Z`;
+        };
+        // 手绘感圆（editorial 系气泡用）：圆周叠两个慢波 + 噪声，seed 定形
+        const blob = (x, y, r, seed) => {
+          const n = Math.max(14, Math.round(r * 1.6)),
+            pts = [];
+          for (let t = 0; t < n; t++) {
+            const a = (t / n) * Math.PI * 2;
+            const w =
+              1 +
+              0.055 * Math.sin(a * 2 + seed * 7) +
+              0.04 * Math.sin(a * 3 + seed * 13) +
+              (rnd(seed + t, 3) - 0.5) * 0.03;
+            pts.push([x + Math.cos(a) * r * w, y + Math.sin(a) * r * w]);
+          }
+          let d = `M${pts[0][0].toFixed(1)} ${pts[0][1].toFixed(1)}`;
+          for (let t = 0; t < n; t++) {
+            const p = pts[t],
+              q = pts[(t + 1) % n];
+            d += ` Q${p[0].toFixed(1)} ${p[1].toFixed(1)} ${((p[0] + q[0]) / 2).toFixed(1)} ${((p[1] + q[1]) / 2).toFixed(1)}`;
+          }
+          return d + " Z";
+        };
+
+        /* ── 8 · SVG 快捷 ────────────────────────────────────────── */
+        const NS = "http://www.w3.org/2000/svg";
+        const el = (p, t, a) => {
+          const n = document.createElementNS(NS, t);
+          for (const k in a) n.setAttribute(k, a[k]);
+          p.appendChild(n);
+          return n;
+        };
+        const txt = (p, a, s) => {
+          const n = el(p, "text", a);
+          n.textContent = s;
+          return n;
+        };
+        const tip = (n, s) => {
+          const t = document.createElementNS(NS, "title");
+          t.textContent = s;
+          n.appendChild(t);
+        };
+
+        /* ── 9 · 统一 reveal：滚入视野才播，点击重播 ──────────────
+     带 timer 登记（keep），重播前清干净，防动画叠加。          */
+        const timers = {};
+        const keep = (id, t) => {
+          (timers[id] = timers[id] || []).push(t);
+        };
+        const obsReveal = (id, fn) => {
+          const n = document.getElementById(id);
+          const go = () => {
+            (timers[id] || []).forEach(clearInterval);
+            timers[id] = [];
+            if (n.tagName === "svg" || n.tagName === "SVG") n.innerHTML = "";
+            fn(n);
+          };
+          const io = new IntersectionObserver(
+            (es) => {
+              if (es[0].isIntersecting) {
+                go();
+                io.disconnect();
+              }
+            },
+            { threshold: 0.3 },
+          );
+          io.observe(n);
+          n.style.cursor = "pointer";
+          n.addEventListener("click", go);
+        };
+        // ECharts 版 reveal
+        const eReveal = (id, opt) =>
+          obsReveal(id, (elDom) => {
+            const g = echarts.getInstanceByDom(elDom) || echarts.init(elDom);
+            g.clear();
+            g.setOption(opt);
+          });
+
+        /* ── 10 · 卡片骨架（生成新图时照抄这个结构） ──────────────
+     <div class="card [dark] [wide]">
+       <h2>结论式标题</h2>
+       <div class="sub">副标题 · 图例说明 · 时间范围</div>
+       <div class="ch" id="xx"></div>  或  <svg id="xx" viewBox="0 0 400 320">
+       <div class="src">图型名 · 系列名 · 数据来源（全大写）</div>
+     </div>                                                        */
+        const CARD_CSS =
+          `
+  :root{--bg:${PAPER};--dark:${DARK.bg};--ink:${INK};--muted:${MUTED};--faint:${FAINT};--grid:${GRID}}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);font-family:'Inter',sans-serif;color:var(--ink);padding:40px;-webkit-font-smoothing:antialiased}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:1400px;margin:0 auto}
+  .card{background:var(--bg);border-radius:${SHAPE.cardRadius}px;padding:${SHAPE.cardPad}}
+  .card.dark{background:var(--dark);color:${PAPER}}
+  .card.dark .sub{color:${MUTED}}
+  .card.dark .src{color:${DARK.faint}}
+  .card.wide{grid-column:1/-1}
+  h2{font-weight:${FONT.title.weight};font-size:${FONT.title.size}px;letter-spacing:${FONT.title.spacing};margin-bottom:3px}
+  .sub{font-size:${FONT.sub.size}px;color:var(--muted);margin-bottom:14px}
+  .src{font-size:${FONT.src.size}px;color:var(--faint);margin-top:10px;letter-spacing:${FONT.src.spacing};font-weight:${FONT.src.weight}}
+  .ch{height:320px}
+  svg text{font-family:'Inter',sans-serif}` + MOTION.css;
+
+        global.MONO = {
+          INK,
+          PAPER,
+          MUTED,
+          FAINT,
+          GRID,
+          L,
+          LAD,
+          DARK,
+          FONT,
+          SHAPE,
+          MOTION,
+          tipLight,
+          tipDark,
+          rnd,
+          pol,
+          sect,
+          blob,
+          el,
+          txt,
+          tip,
+          obsReveal,
+          eReveal,
+          keep,
+          CARD_CSS,
+        };
+      })(typeof window !== "undefined" ? window : globalThis);
+    </script>
+    <script>
+      "use strict";
+      const DATA = JSON.parse(
+        document.getElementById("paper-data").textContent,
+      );
+      const $ = (selector) => document.querySelector(selector);
+      const collator = new Intl.Collator("en", {
+        sensitivity: "base",
+        numeric: true,
+      });
+      const normalize = (value) =>
+        String(value || "")
+          .normalize("NFKC")
+          .toLowerCase()
+          .replace(/[^\p{L}\p{N}]+/gu, " ")
+          .trim();
+      const list = $("#papers"),
+        search = $("#search"),
+        sort = $("#sort");
+      const paperElements = new Map(
+        Array.from(list.children, (element) => [
+          element.dataset.paperId,
+          element,
+        ]),
+      );
+      const papers = DATA.map((paper) => ({
+        ...paper,
+        element: paperElements.get(paper.id),
+        searchable: normalize(
+          [
+            paper.title,
+            paper.short_title,
+            paper.description,
+            paper.tag,
+            paper.keywords,
+            ...(paper.authors || []),
+            ...(paper.topics || []),
+          ].join(" "),
+        ),
+      }));
+      let activeTopic = "";
+      const number = (value) =>
+        value === null || value === undefined
+          ? "—"
+          : value.toLocaleString("en");
+      function filterPapers() {
+        const terms = normalize(search.value).split(" ").filter(Boolean);
+        let visible = 0;
+        papers.forEach((paper) => {
+          const matches =
+            terms.every((term) => paper.searchable.includes(term)) &&
+            (!activeTopic || (paper.topics || []).includes(activeTopic));
+          paper.element.hidden = !matches;
+          visible += Number(matches);
+        });
+        $("#results").textContent =
+          terms.length || activeTopic
+            ? `找到 ${visible} / ${papers.length} 篇论文`
+            : `共 ${papers.length} 篇论文`;
+        $("#empty").hidden = visible > 0;
+        $("#filters")
+          .querySelectorAll("button")
+          .forEach((button) =>
+            button.setAttribute(
+              "aria-pressed",
+              String(button.dataset.topic === activeTopic),
+            ),
+          );
       }
-
-      results.textContent = terms.length
-        ? `找到 ${visible} 篇论文，共 ${papers.length} 篇`
-        : `共 ${papers.length} 篇论文`;
-      empty.hidden = visible > 0;
-    }
-
-    function sortPapers() {
-      const direction = sort.value === 'desc' ? -1 : 1;
-      papers.sort((a, b) => direction * compareTitles.compare(a.title, b.title));
-      list.append(...papers.map((paper) => paper.element));
-    }
-
-    search.addEventListener('input', filterPapers);
-    sort.addEventListener('change', sortPapers);
-    sortPapers();
-    filterPapers();
-    document.querySelector('#toolbar').hidden = false;
-  </script>
-</body>
+      function sortPapers() {
+        papers.sort((a, b) =>
+          sort.value === "paragraphs"
+            ? (b.paragraphs ?? -1) - (a.paragraphs ?? -1) ||
+              collator.compare(a.title, b.title)
+            : (sort.value === "desc" ? -1 : 1) *
+              collator.compare(a.title, b.title),
+        );
+        list.append(...papers.map((paper) => paper.element));
+      }
+      function topicButton(label, topic, count) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "filter";
+        button.dataset.topic = topic;
+        button.append(document.createTextNode(label));
+        const counter = document.createElement("span");
+        counter.className = "filter-count";
+        counter.textContent = count;
+        button.append(counter);
+        button.addEventListener("click", () => {
+          activeTopic = topic;
+          filterPapers();
+        });
+        $("#filters").append(button);
+      }
+      topicButton("全部", "", DATA.length);
+      const topicCounts = new Map();
+      DATA.forEach((paper) =>
+        new Set(paper.topics || []).forEach((topic) =>
+          topicCounts.set(topic, (topicCounts.get(topic) || 0) + 1),
+        ),
+      );
+      topicCounts.forEach((count, topic) => topicButton(topic, topic, count));
+      const authors = Array.from(
+        new Set(DATA.flatMap((paper) => paper.authors || [])),
+      ).sort(collator.compare);
+      authors.forEach((name) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = name;
+        button.addEventListener("click", () => {
+          search.value = name;
+          activeTopic = "";
+          filterPapers();
+          search.focus();
+        });
+        $("#author-list").append(button);
+      });
+      $("#authors").hidden = !authors.length;
+      $("#clear-filters").addEventListener("click", () => {
+        search.value = "";
+        activeTopic = "";
+        filterPapers();
+        search.focus();
+      });
+      search.addEventListener("input", filterPapers);
+      sort.addEventListener("change", sortPapers);
+      sortPapers();
+      filterPapers();
+      $("#toolbar").hidden = false;
+      $("#filters").hidden = false;
+      // Only verified, directed in-library bibliography links are displayed.
+      DATA.forEach((paper) =>
+        (paper.citations || []).forEach((citation) => {
+          const target = DATA.find((item) => item.id === citation.target);
+          if (!target) return;
+          const route = document.createElement("div");
+          route.className = "citation-route";
+          const from = document.createElement("a");
+          from.className = "citation-paper";
+          from.href = paper.href;
+          from.textContent = paper.short_title;
+          const arrow = document.createElement("span");
+          arrow.className = "citation-arrow";
+          arrow.textContent = "引用";
+          const to = document.createElement("a");
+          to.className = "citation-paper";
+          to.href = target.href;
+          to.textContent = target.short_title;
+          const evidence = document.createElement("a");
+          evidence.className = "citation-evidence";
+          evidence.href = `${paper.href}#${encodeURIComponent(citation.anchor)}`;
+          evidence.textContent = `${citation.label} · 查看原始引用 ↗`;
+          route.append(from, arrow, to, evidence);
+          $("#citation-routes").append(route);
+        }),
+      );
+      $("#connections").hidden = !$("#citation-routes").children.length;
+      const TYPES = [
+        ["method", "方法"],
+        ["concept", "概念"],
+        ["evidence", "证据"],
+        ["thesis", "论点"],
+        ["response", "讨论"],
+      ];
+      const { el, txt, tip, rnd, obsReveal } = MONO;
+      const compactCharts = window.matchMedia("(max-width:720px)");
+      function chartLabel(paper, compact) {
+        if (paper.short_title === "Zooming without Zooming")
+          return compact ? "ZwZ" : "Zooming w/o Zooming";
+        const limit = compact ? 13 : 22;
+        return paper.short_title.length > limit
+          ? paper.short_title.slice(0, limit - 2) + "…"
+          : paper.short_title;
+      }
+      // L4 Arc Matrix: horizon paths, category grid, sqrt radii, and staggered reveal.
+      function drawMatrix(svg) {
+        svg.replaceChildren();
+        const slice = chartPapers();
+        const compact = compactCharts.matches,
+          width = compact ? 360 : 500,
+          spacing = compact ? 66 : 62;
+        const rowY = (i) => (compact ? 90 : 86) + i * spacing,
+          colX = (j) => (compact ? 124 : 188) + j * (compact ? 48 : 62),
+          dy = (j) => -16 * Math.sin((Math.PI * j) / 4);
+        const maxCount = Math.max(
+          1,
+          ...slice.flatMap((paper) =>
+            TYPES.map(([key]) => paper.highlights?.[key] || 0),
+          ),
+        );
+        const radiusScale = Math.min(1.55, 22 / Math.sqrt(maxCount));
+        svg.setAttribute(
+          "viewBox",
+          `0 0 ${width} ${Math.max(255, 105 + slice.length * spacing)}`,
+        );
+        TYPES.forEach(([, label], j) =>
+          txt(
+            svg,
+            {
+              x: colX(j),
+              y: 34,
+              "font-size": compact ? 12 : 10,
+              "font-weight": 600,
+              fill: MONO.L[2],
+              "text-anchor": "middle",
+            },
+            label,
+          ),
+        );
+        slice.forEach((paper, i) => {
+          const path =
+            "M" +
+            TYPES.map((_, j) => `${colX(j)} ${rowY(i) + dy(j)}`).join(" L ");
+          el(svg, "path", {
+            d: path,
+            fill: "none",
+            stroke: MONO.GRID,
+            "stroke-width": 1,
+            pathLength: 1,
+            class: "draw",
+            style: `animation-delay:${i * 0.08}s`,
+          });
+          const label = chartLabel(paper, compact);
+          const name = txt(
+            svg,
+            {
+              x: compact ? 98 : 157,
+              y: rowY(i) + 3,
+              "font-size": compact ? 12 : 10,
+              "font-weight": 600,
+              fill: MONO.L[2],
+              "text-anchor": "end",
+              class: "fade",
+              style: `animation-delay:${i * 0.08}s`,
+            },
+            label,
+          );
+          tip(name, paper.title);
+          TYPES.forEach(([key, category], j) => {
+            const v = paper.highlights?.[key],
+              x = colX(j),
+              y = rowY(i) + dy(j);
+            if (v === null || v === undefined) {
+              txt(
+                svg,
+                {
+                  x,
+                  y: y + 3,
+                  "text-anchor": "middle",
+                  "font-size": 10,
+                  fill: MONO.L[2],
+                },
+                "—",
+              );
+              return;
+            }
+            const radius = Math.sqrt(v) * radiusScale;
+            const dot = el(svg, "circle", {
+              cx: x,
+              cy: y,
+              r: v ? radius : 0.9,
+              fill: v >= 60 ? MONO.INK : v >= 30 ? MONO.L[2] : MONO.L[4],
+              class: "pop matrix-count",
+              "data-count": v,
+              style: `animation-delay:${0.2 + i * 0.08 + j * 0.02}s`,
+            });
+            tip(dot, `${paper.short_title} · ${category}：${v} 个高亮片段`);
+            txt(
+              svg,
+              {
+                x,
+                y: y - radius - 6,
+                "font-size": compact ? 11 : 9,
+                "font-weight": 800,
+                fill: MONO.INK,
+                "text-anchor": "middle",
+                class: "fade",
+                style: "animation-delay:.6s",
+              },
+              v,
+            );
+          });
+        });
+        if (!slice.length)
+          txt(
+            svg,
+            {
+              x: 250,
+              y: 120,
+              "text-anchor": "middle",
+              "font-size": 12,
+              fill: MONO.L[2],
+            },
+            "收录论文后生成统计",
+          );
+      }
+      // F5 Tick Rows: one line per bibliography entry, a dot every fifth.
+      function drawReferences(svg) {
+        svg.replaceChildren();
+        const slice = [...chartPapers()].sort(
+          (a, b) => (b.references ?? -1) - (a.references ?? -1),
+        );
+        const compact = compactCharts.matches,
+          width = compact ? 360 : 500,
+          spacing = compact ? 66 : 62;
+        const max = Math.max(1, ...slice.map((paper) => paper.references || 0)),
+          X0 = compact ? 96 : 168,
+          PX = Math.min(6.9, (compact ? 220 : 286) / max),
+          rowY = (i) => 75 + i * spacing;
+        svg.setAttribute(
+          "viewBox",
+          `0 0 ${width} ${Math.max(255, 105 + slice.length * spacing)}`,
+        );
+        slice.forEach((paper, i) => {
+          const y = rowY(i),
+            value = paper.references,
+            label = chartLabel(paper, compact);
+          const name = txt(
+            svg,
+            {
+              x: X0 - 12,
+              y: y + 3,
+              "font-size": compact ? 12 : 10,
+              "font-weight": 600,
+              fill: MONO.L[2],
+              "text-anchor": "end",
+              class: "fade",
+              style: `animation-delay:${i * 0.08}s`,
+            },
+            label,
+          );
+          tip(name, paper.title);
+          el(svg, "line", {
+            x1: X0,
+            y1: y + 9,
+            x2: X0 + max * PX,
+            y2: y + 9,
+            stroke: MONO.GRID,
+            "stroke-width": 0.6,
+            class: "fade",
+          });
+          if (value !== null && value !== undefined) {
+            for (let k = 0; k < value; k++) {
+              const x = X0 + k * PX + PX / 2,
+                height = 9 + rnd(k + 1, i + 2) * 6;
+              el(svg, "line", {
+                x1: x,
+                y1: y + 9,
+                x2: x,
+                y2: y + 9 - height,
+                stroke: MONO.INK,
+                "stroke-width": Math.min(0.9, PX * 0.55),
+                opacity: 0.55 + rnd(k + 3, i + 5) * 0.45,
+                class: "fade ref-tick",
+                style: `animation-delay:${i * 0.08 + k * 0.012}s`,
+              });
+              if (k % 5 === 4)
+                el(svg, "circle", {
+                  cx: x,
+                  cy: y + 14,
+                  r: 0.8,
+                  fill: MONO.FAINT,
+                  class: "fade",
+                  style: `animation-delay:${i * 0.08 + k * 0.012}s`,
+                });
+            }
+          }
+          const count = txt(
+            svg,
+            {
+              x: X0 + (value || 0) * PX + 10,
+              y: y + 4,
+              "font-size": 12,
+              "font-weight": 800,
+              fill: MONO.INK,
+              class: "fade",
+              style: `animation-delay:${0.4 + i * 0.08}s`,
+            },
+            number(value),
+          );
+          tip(count, `${paper.short_title}：${number(value)} 条参考文献`);
+        });
+        if (!slice.length)
+          txt(
+            svg,
+            {
+              x: 250,
+              y: 120,
+              "text-anchor": "middle",
+              "font-size": 12,
+              fill: MONO.L[2],
+            },
+            "收录论文后生成统计",
+          );
+      }
+      const chartPage = $("#chart-page");
+      for (let offset = 0; offset < DATA.length; offset += 8) {
+        const option = document.createElement("option");
+        option.value = offset;
+        option.textContent = `第 ${offset + 1}–${Math.min(DATA.length, offset + 8)} 篇 / 共 ${DATA.length} 篇`;
+        chartPage.append(option);
+      }
+      $("#chart-page-control").hidden = DATA.length <= 8;
+      function chartPapers() {
+        const offset = Number(chartPage.value || 0);
+        return DATA.slice(offset, offset + 8);
+      }
+      function replay() {
+        drawMatrix($("#highlight-matrix"));
+        drawReferences($("#reference-ticks"));
+      }
+      $("#replay").addEventListener("click", replay);
+      chartPage.addEventListener("change", replay);
+      compactCharts.addEventListener("change", replay);
+      const totals = TYPES.map(([key, label]) => [
+        label,
+        DATA.reduce((sum, paper) => sum + (paper.highlights?.[key] || 0), 0),
+      ]).sort((a, b) => b[1] - a[1]);
+      const allHighlights = totals.reduce((sum, [, value]) => sum + value, 0);
+      $("#highlight-insight").textContent = allHighlights
+        ? `「${totals[0][0]}」留下最多标注：${totals[0][1]} / ${allHighlights} 个片段。`
+        : "有可识别的高亮后，将显示关注点统计。";
+      const referenced = DATA.filter(
+          (paper) =>
+            paper.references !== null && paper.references !== undefined,
+        ).sort((a, b) => b.references - a.references),
+        totalRefs = referenced.reduce(
+          (sum, paper) => sum + paper.references,
+          0,
+        );
+      $("#reference-insight").textContent = referenced.length
+        ? `当前书架包含 ${totalRefs} 条参考文献记录；${referenced[0].short_title} 的列表最长（${referenced[0].references} 条）。`
+        : "参考文献条目将在识别后显示。";
+      const table = document.createElement("table"),
+        caption = document.createElement("caption");
+      caption.className = "sr-only";
+      caption.textContent = "全库论文的笔记统计明细";
+      table.append(caption);
+      const head = document.createElement("thead"),
+        heading = document.createElement("tr");
+      [
+        "论文",
+        "正文段落",
+        "方法",
+        "概念",
+        "证据",
+        "论点",
+        "讨论",
+        "参考文献",
+      ].forEach((label) => {
+        const cell = document.createElement("th");
+        cell.scope = "col";
+        cell.textContent = label;
+        heading.append(cell);
+      });
+      head.append(heading);
+      table.append(head);
+      const body = document.createElement("tbody");
+      DATA.forEach((paper) => {
+        const row = document.createElement("tr"),
+          name = document.createElement("th");
+        name.scope = "row";
+        name.textContent = paper.short_title;
+        row.append(name);
+        [
+          paper.paragraphs,
+          ...TYPES.map(([key]) => paper.highlights?.[key]),
+          paper.references,
+        ].forEach((value) => {
+          const cell = document.createElement("td");
+          cell.textContent = number(value);
+          row.append(cell);
+        });
+        body.append(row);
+      });
+      table.append(body);
+      $("#data-table").append(table);
+      $("#insights").hidden = false;
+      if ("IntersectionObserver" in window) {
+        obsReveal("highlight-matrix", drawMatrix);
+        obsReveal("reference-ticks", drawReferences);
+      } else {
+        replay();
+      }
+    </script>
+  </body>
 </html>
