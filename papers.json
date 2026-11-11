@@ -11,6 +11,12 @@
     "tag": "区域到整图蒸馏",
     "topics": ["细粒度感知", "知识蒸馏"]
   },
+  "Zooming-without-Zooming-v2.html": {
+    "short_title": "Zooming without Zooming v2",
+    "description": "用单图多区域问题训练证据连接，让感知收益迁移到空间推理、多图长上下文和多模态智能体。",
+    "tag": "多区域证据连接",
+    "topics": ["细粒度感知", "空间推理", "强化学习", "多模态长上下文"]
+  },
   "INSID3.html": {
     "short_title": "INSID3",
     "description": "用一个标注示例与 DINOv3 特征完成上下文分割，通过位置去偏与聚类建立跨图对应。",
