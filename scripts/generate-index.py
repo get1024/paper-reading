@@ -70,7 +70,7 @@ def paper_card(paper, overrides):
         cover_html = f'<img class="cover" src="{escape(cover)}" alt="">'
     description_html = f"<p>{escape(description)}</p>" if description else ""
     keywords = escape(metadata.keywords)
-    href = escape(quote(paper.name))
+    href = escape(quote(paper.relative_to(ROOT).as_posix()))
     card = f"""      <li data-keywords="{keywords}">
         <a class="card" href="./{href}">
           {cover_html}
@@ -89,9 +89,8 @@ def paper_card(paper, overrides):
 
 def build():
     papers = sorted(
-        paper for paper in ROOT.iterdir()
+        paper for paper in (ROOT / "paper").rglob("*")
         if paper.is_file() and paper.suffix.lower() == ".html"
-        and paper.name.lower() != "index.html"
     )
     metadata_file = ROOT / "papers.json"
     overrides = json.loads(metadata_file.read_text(encoding="utf-8")) if metadata_file.is_file() else {}
