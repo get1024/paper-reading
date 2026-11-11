@@ -1,2 +1,4 @@
 .DS_Store
 /Icon?
+/dist/
+__pycache__/

@@ -253,35 +253,10 @@
       </label>
     </div>
 
-    <p id="results" class="results" role="status"></p>
+    <p id="results" class="results" role="status">共 {{paper_count}} 篇论文</p>
 
     <ul class="grid" id="papers" aria-label="论文列表">
-      <li>
-        <a class="card" href="./Vision-OPD.html">
-          <img class="cover" src="./assets/vision-opd.png" width="1228" height="488" alt="">
-          <div class="card-body">
-            <h2 lang="en">Vision-OPD: Learning to See Fine Details for Multimodal LLMs via On-Policy Self-Distillation</h2>
-            <p>让多模态模型从局部裁剪中学习，在看整张图时也能识别细节。</p>
-            <div class="card-footer">
-              <span class="tag">策略内自蒸馏</span>
-              <span class="open">阅读批注 <span aria-hidden="true">→</span></span>
-            </div>
-          </div>
-        </a>
-      </li>
-      <li>
-        <a class="card" href="./Zooming-without-Zooming.html">
-          <img class="cover" src="./assets/zooming-without-zooming.png" width="1278" height="679" alt="">
-          <div class="card-body">
-            <h2 lang="en">Zooming without Zooming: Region-to-Image Distillation for Fine-Grained Multimodal Perception</h2>
-            <p>将局部放大图中的视觉知识蒸馏到整图输入，减少推理时的裁剪与重复编码。</p>
-            <div class="card-footer">
-              <span class="tag">区域到整图蒸馏</span>
-              <span class="open">阅读批注 <span aria-hidden="true">→</span></span>
-            </div>
-          </div>
-        </a>
-      </li>
+{{paper_cards}}
     </ul>
 
     <p id="empty" class="empty" hidden>没有匹配的论文。试试更短的关键词。</p>
@@ -309,7 +284,7 @@
       title: element.querySelector('h2').textContent,
       keywords: normalize(Array.from(
         element.querySelectorAll('h2, p, .tag'), (field) => field.textContent
-      ).join(' ')),
+      ).join(' ') + ' ' + element.dataset.keywords),
     }));
 
     function filterPapers() {
