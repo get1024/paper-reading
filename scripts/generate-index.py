@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-"""Build the paper index and standalone GitHub Pages output using only Python."""
+"""Generate the root paper index using only Python."""
 
-import base64
 import json
 import re
-import shutil
 from html import escape
 from html.parser import HTMLParser
 from pathlib import Path
@@ -49,7 +47,7 @@ class PaperMetadata(HTMLParser):
             self.capture.append(data)
 
 
-def paper_card(paper, output, overrides):
+def paper_card(paper, overrides):
     metadata = PaperMetadata()
     metadata.feed(paper.read_text(encoding="utf-8"))
     title = " ".join("".join(metadata.heading or metadata.page_title).split()) or paper.stem
@@ -61,20 +59,15 @@ def paper_card(paper, output, overrides):
     for extension in ("png", "jpg", "jpeg", "webp", "gif"):
         asset = ROOT / "assets" / f"{paper.stem.lower()}.{extension}"
         if asset.is_file():
-            cover = asset.relative_to(ROOT).as_posix()
+            cover = "./" + quote(asset.relative_to(ROOT).as_posix())
             break
 
-    if not cover and metadata.image:
-        header, encoded_image = metadata.image.split(",", 1)
-        extension = header.split("/")[1].split(";")[0]
-        image_file = output / "covers" / f"{paper.stem}.{extension}"
-        image_file.parent.mkdir(parents=True, exist_ok=True)
-        image_file.write_bytes(base64.b64decode(encoded_image))
-        cover = image_file.relative_to(output).as_posix()
+    if not cover:
+        cover = metadata.image
 
     cover_html = ""
     if cover:
-        cover_html = f'<img class="cover" src="./{escape(quote(cover))}" alt="">'
+        cover_html = f'<img class="cover" src="{escape(cover)}" alt="">'
     description_html = f"<p>{escape(description)}</p>" if description else ""
     keywords = escape(metadata.keywords)
     href = escape(quote(paper.name))
@@ -95,34 +88,23 @@ def paper_card(paper, output, overrides):
 
 
 def build():
-    output = ROOT / "dist"
-    # Rebuild from scratch so removed papers and their generated covers disappear.
-    if output.exists():
-        shutil.rmtree(output)
-    output.mkdir()
-
     papers = sorted(
         paper for paper in ROOT.iterdir()
         if paper.is_file() and paper.suffix.lower() == ".html"
         and paper.name.lower() != "index.html"
     )
-    if (ROOT / "assets").is_dir():
-        shutil.copytree(ROOT / "assets", output / "assets")
-
     metadata_file = ROOT / "papers.json"
     overrides = json.loads(metadata_file.read_text(encoding="utf-8")) if metadata_file.is_file() else {}
     cards = []
     for paper in papers:
-        cards.append(paper_card(paper, output, overrides.get(paper.name, {})))
-        shutil.copy2(paper, output / paper.name)
+        cards.append(paper_card(paper, overrides.get(paper.name, {})))
     cards.sort(key=lambda item: item[0].casefold())
 
     template = (ROOT / "templates" / "index.html").read_text(encoding="utf-8")
     index = template.replace("{{paper_cards}}", "\n".join(card for _, card in cards))
     index = index.replace("{{paper_count}}", str(len(cards)))
-    (output / "index.html").write_text(index, encoding="utf-8")
-    (output / ".nojekyll").touch()
-    print(f"Built dist/index.html with {len(cards)} papers")
+    (ROOT / "index.html").write_text(index, encoding="utf-8")
+    print(f"Generated index.html with {len(cards)} papers")
     for title, _ in cards:
         print(f"  {title}")
 

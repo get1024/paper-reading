@@ -6,7 +6,7 @@
 
 新增论文时，把 HTML 文件放在仓库根目录并推送到 `main`。GitHub Actions 会自动扫描这些文件，提取标题和简介，生成索引并发布到 GitHub Pages。删除或改名也会在下一次构建时反映到索引中。
 
-标题优先使用 HTML 的第一个 `<h1>`，其次使用 `<title>`，最后使用文件名。简介和搜索关键词分别读取 `<meta name="description">` 与 `<meta name="keywords">`。封面优先使用 `assets/` 中与 HTML 文件同名的小写图片（如 `Vision-OPD.html` 对应 `assets/vision-opd.png`），否则提取第一张内嵌的 PNG、JPEG、WebP 或 GIF。
+标题优先使用 HTML 的第一个 `<h1>`，其次使用 `<title>`，最后使用文件名。简介和搜索关键词分别读取 `<meta name="description">` 与 `<meta name="keywords">`。封面优先使用 `assets/` 中与 HTML 文件同名的小写图片（如 `Vision-OPD.html` 对应 `assets/vision-opd.png`），否则直接引用第一张内嵌的 PNG、JPEG、WebP 或 GIF。
 
 `papers.json` 保留了原有两篇论文的中文简介和主题标签，也可用于覆盖单篇论文的这两个字段。新 HTML 会自动收录，无需在此文件中登记。
 
@@ -14,10 +14,10 @@
 
 ```sh
 python3 scripts/generate-index.py
-python3 -m http.server 8000 --directory dist
+python3 -m http.server 8000
 ```
 
-打开 `http://localhost:8000/`。`dist/` 是每次构建重新生成的发布目录，已加入 Git 忽略。
+打开 `http://localhost:8000/`。构建只生成根目录的 `index.html`，该文件已加入 Git 忽略。GitHub Actions 将根目录的 HTML 和 `assets/` 直接打包发布。
 
 ## 封面图来源
 

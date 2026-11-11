@@ -30,10 +30,19 @@ jobs:
       - name: Generate paper index
         run: python3 scripts/generate-index.py
 
+      - name: Package original papers and generated index
+        run: |
+          find . -maxdepth 1 -type f -iname '*.html' -print0 > "$RUNNER_TEMP/page-files"
+          tar --create --file "$RUNNER_TEMP/artifact.tar" --dereference --hard-dereference \
+            --exclude='.DS_Store' --null --files-from "$RUNNER_TEMP/page-files" assets
+
       - name: Upload site
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-artifact@v4
         with:
-          path: dist
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: 1
+          if-no-files-found: error
 
       - name: Deploy site
         id: deployment
