@@ -22,5 +22,12 @@
     "description": "用一个标注示例与 DINOv3 特征完成上下文分割，通过位置去偏与聚类建立跨图对应。",
     "tag": "无需训练的上下文分割",
     "topics": ["上下文分割", "无需训练"]
+  },
+  "Context-Language-Models.html": {
+    "short_title": "Context Language Models",
+    "description": "把实时上下文视作可编辑文件，让模型自行保留、更新和卸载信息，并通过技能演化与强化学习改进管理策略。",
+    "tag": "原生上下文管理",
+    "topics": ["上下文管理", "多智能体", "强化学习", "KV 缓存"],
+    "year": 2026
   }
 }
